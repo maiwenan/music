@@ -39,32 +39,53 @@ class NetEase(object):
 		response.encoding = 'UTF-8'
 		return response.json()
 
+	# 获取（最热或者最新）歌单列表
+	def playlists(self, order, cat, limit, offset):
+		url = 'http://music.163.com/api/playlist/list?order={}&cat={}&limit={}&offset={}'.format(order, cat, limit, offset)
+		try:
+			result = self.get(url)
+			# print(result)
+			return result
+		except requests.exceptions.RequestException as e:
+			print(e)
+			return {}
+
+	# 获取歌单详情
+	def playlist_detail(self, id):
+		url = 'http://music.163.com/api/playlist/detail?id={}'.format(id)
+		try:
+			result = self.get(url)
+			return result['result']
+		except requests.exceptions.RequestException as e:
+			print(e)
+			return {}
+
 	# 获取歌曲详情，多个歌曲id会返回多个歌曲详情
 	def songs_detail(self, ids):
 		id_list = map(str, ids)
 		url = 'http://music.163.com/api/song/detail/?ids=[{}]'.format(','.join(id_list))
 		try:
 			result = self.get(url)
-			print(result)
 			return result['songs']
 		except requests.exceptions.RequestException as e:
 			print(e)
 			return []
 
 	# 获取歌曲评论，首页的歌曲评论会带有该歌曲的热评评论
-	def song_comments(self, music_id, offset = 0, total = 'fasle', limit = 10):
+	def song_comments(self, music_id, offset = 0, limit = 10, total = 'fasle'):
 		url = 'http://music.163.com/api/v1/resource/comments/R_SO_4_{}/?rid=R_SO_4_{}&\
             offset={}&total={}&limit={}'.format(music_id, music_id, offset, total, limit)
 
 		try:
 		    result = self.get(url)
-		    print(result)
 		    return result
 		except requests.exceptions.RequestException as e:
 		    print(e)
 		    return {}
 
+ne = NetEase()
+
 if __name__ == '__main__':
-	ne = NetEase()
+	# ne = NetEase()
 	# ne.song_comments(354593)
 	ne.songs_detail([354593])
